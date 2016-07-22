@@ -7,13 +7,14 @@ test('basic', function () {
   var view = new recline.View.SlickGrid({
     model: dataset
   });
+
   $('.fixtures .test-datatable').append(view.el);
   view.render();
 
   // Render the grid manually
   view.grid.init();
 
-  assertPresent('.slick-header-column[title="x"]');
+  equal($('.slick-header-column:gt(1):first').find('.slick-column-name').html(), 'x');
   equal($('.slick-header-column').length,dataset.fields.length);
 
   equal(dataset.records.length,view.grid.getDataLength());
@@ -27,7 +28,7 @@ test('state', function () {
   var view = new recline.View.SlickGrid({
     model: dataset,
     state: {
-      hiddenColumns:['x','lat','title'],
+      hiddenColumns:['x','lat','title','p'],
       columnsOrder:['lon','id','z','date', 'y', 'country'],
       columnsWidth:[
         {column:'id',width: 250}
@@ -45,16 +46,17 @@ test('state', function () {
   });
 
   // Hidden columns
-  assertPresent('.slick-header-column[title="y"]');
-  assertNotPresent('.slick-header-column[title="x"]');
-  var headers = $('.slick-header-column');
-  equal(headers.length,visibleColumns.length);
+  equal($('.slick-header-column:gt(3):first').find('.slick-column-name').html(), 'y');
+  equal($('.slick-column-name:contains(x)').length, 0)
+  var headerNames = []
+  $('.slick-column-name').each(function() { headerNames.push($(this).text()) });
+  equal(headerNames.length,visibleColumns.length);
 
   // Column order
-  deepEqual(_.pluck(headers,'title'),view.state.get('columnsOrder'));
+  deepEqual(headerNames,view.state.get('columnsOrder'));
 
   // Column width
-  equal($('.slick-header-column[title="id"]').width(),250);
+  equal($('.slick-column-name:contains(id)').parent().width(),250);
 
   // Editable grid
   equal(true, view.grid.getOptions().editable);
@@ -71,7 +73,7 @@ test('editable', function () {
   var view = new recline.View.SlickGrid({
     model: dataset,
     state: {
-      hiddenColumns:['x','lat','title'],
+      hiddenColumns:['x','lat','title','p'],
       columnsOrder:['lon','id','z','date', 'y', 'country'],
       columnsWidth:[
         {column:'id',width: 250}
@@ -108,7 +110,7 @@ test('delete-row' , function(){
   var view = new recline.View.SlickGrid({
     model: dataset,
     state: {
-      hiddenColumns:['x','lat','title'],
+      hiddenColumns:['x','lat','title','p'],
       columnsOrder:['lon','id','z','date', 'y', 'country'],
       columnsWidth:[
         {column:'id',width: 250}
@@ -154,7 +156,7 @@ test('delete-row-with-row-reorder-activated' , function(){
   var view = new recline.View.SlickGrid({
     model: dataset,
     state: {
-      hiddenColumns:['x','lat','title'],
+      hiddenColumns:['x','lat','title','p'],
       columnsOrder:['lon','id','z','date', 'y', 'country'],
       columnsWidth:[
         {column:'id',width: 250}
@@ -197,7 +199,7 @@ var dataset = Fixture.getDataset();
   var view = new recline.View.SlickGrid({
     model: dataset,
     state: {
-      hiddenColumns:['x','lat','title'],
+      hiddenColumns:['x','lat','title','p'],
       columnsOrder:['lon','id','z','date', 'y', 'country'],
       columnsWidth:[
         {column:'id',width: 250}
@@ -226,7 +228,7 @@ test('update', function() {
   var view = new recline.View.SlickGrid({
     model: dataset,
     state: {
-      hiddenColumns:['x','lat','title'],
+      hiddenColumns:['x','lat','title','p'],
       columnsOrder:['lon','id','z','date', 'y', 'country'],
       columnsWidth:[
         {column:'id',width: 250}
